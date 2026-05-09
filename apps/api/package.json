@@ -1,0 +1,30 @@
+{
+  "name": "@comms-agent/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/server.ts",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json",
+    "smoke": "tsx scripts/smoke.ts",
+    "eval": "tsx scripts/eval.ts",
+    "reindex": "tsx scripts/reindex.ts",
+    "seed": "tsx scripts/seed.ts"
+  },
+  "dependencies": {
+    "@fastify/cors": "^10.0.1",
+    "@comms-agent/core": "workspace:*",
+    "@comms-agent/search": "workspace:*",
+    "@comms-agent/shared": "workspace:*",
+    "@comms-agent/storage": "workspace:*",
+    "@mozilla/readability": "^0.6.0",
+    "fastify": "^5.3.2",
+    "jsdom": "^29.1.1",
+    "pdf-parse": "^2.4.5"
+  },
+  "devDependencies": {
+    "@types/jsdom": "^28.0.1"
+  }
+}
