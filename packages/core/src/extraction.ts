@@ -1,4 +1,4 @@
-import type { ClaimRecord, EntityRecord, KnowledgeChunk, RelationRecord } from "@comms-agent/shared";
+import type { ClaimRecord, EntityRecord, KnowledgeChunk, RelationRecord } from "@knowledge-brain/shared";
 import { stableId } from "./hash.js";
 import { splitSentences } from "./text.js";
 
@@ -137,7 +137,7 @@ function inferEntityType(entity: string): string {
   if (/\b(AI|ML|API|SDK|URL|HTTP|MCP)\b/.test(entity)) {
     return "concept";
   }
-  if (entity.includes("OpenSearch") || entity.includes("Comms Agent")) {
+  if (entity.includes("OpenSearch") || entity.includes("Knowledge Brain")) {
     return "organization_or_product";
   }
   if (entity.includes("Agent") || entity.includes("Search")) {

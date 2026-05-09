@@ -5,17 +5,17 @@ const app = await buildApp();
 const seeds = [
   {
     kind: "text",
-    title: "Comms Agent Operating Manual",
+    title: "Knowledge Brain Operating Manual",
     tags: ["comms", "manual"],
     content:
-      "Comms Agent ingests manuals, notes, URLs, files, and GitHub repositories, then answers questions with citations. Shared examples use placeholders only; real API keys, credentials, logs, and runtime databases stay local."
+      "Knowledge Brain ingests manuals, notes, URLs, files, and GitHub repositories, then answers questions with citations. Shared examples use placeholders only; real API keys, credentials, logs, and runtime databases stay local."
   },
   {
     kind: "text",
-    title: "Comms Agent Demo Notes",
+    title: "Knowledge Brain Demo Notes",
     tags: ["demo", "architecture"],
     content:
-      "Comms Agent is a TypeScript agent that ingests information, builds a structured knowledge base, retrieves cited answers, and self-heals over time. It uses OpenSearch for BM25, vector, and hybrid retrieval. It stores canonical source, job, and graph metadata in SQLite."
+      "Knowledge Brain is a TypeScript agent that ingests information, builds a structured knowledge base, retrieves cited answers, and self-heals over time. It uses OpenSearch for BM25, vector, and hybrid retrieval. It stores canonical source, job, and graph metadata in SQLite."
   },
   {
     kind: "github_repo",

@@ -44,16 +44,16 @@ importers:
 
   apps/api:
     dependencies:
-      '@comms-agent/core':
+      '@knowledge-brain/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@comms-agent/search':
+      '@knowledge-brain/search':
         specifier: workspace:*
         version: link:../../packages/search
-      '@comms-agent/shared':
+      '@knowledge-brain/shared':
         specifier: workspace:*
         version: link:../../packages/shared
-      '@comms-agent/storage':
+      '@knowledge-brain/storage':
         specifier: workspace:*
         version: link:../../packages/storage
       '@fastify/cors':
@@ -78,7 +78,7 @@ importers:
 
   apps/web:
     dependencies:
-      '@comms-agent/shared':
+      '@knowledge-brain/shared':
         specifier: workspace:*
         version: link:../../packages/shared
       lucide-react:
@@ -100,7 +100,7 @@ importers:
 
   packages/core:
     dependencies:
-      '@comms-agent/shared':
+      '@knowledge-brain/shared':
         specifier: workspace:*
         version: link:../shared
       js-tiktoken:
@@ -118,10 +118,10 @@ importers:
 
   packages/search:
     dependencies:
-      '@comms-agent/core':
+      '@knowledge-brain/core':
         specifier: workspace:*
         version: link:../core
-      '@comms-agent/shared':
+      '@knowledge-brain/shared':
         specifier: workspace:*
         version: link:../shared
       '@opensearch-project/opensearch':
@@ -132,7 +132,7 @@ importers:
 
   packages/storage:
     dependencies:
-      '@comms-agent/shared':
+      '@knowledge-brain/shared':
         specifier: workspace:*
         version: link:../shared
 

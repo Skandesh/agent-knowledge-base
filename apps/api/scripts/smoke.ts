@@ -26,7 +26,7 @@ const ingest = await app.inject({
       title: "Smoke knowledge",
       tags: ["smoke"],
       content:
-        "Comms Agent ingests sources, builds chunks, extracts OpenSearch entities, and retrieves cited answers. OpenSearch is the primary retrieval backend, while SQLite preserves canonical metadata."
+        "Knowledge Brain ingests sources, builds chunks, extracts OpenSearch entities, and retrieves cited answers. OpenSearch is the primary retrieval backend, while SQLite preserves canonical metadata."
     }
   }
 });
@@ -39,14 +39,14 @@ const query = await app.inject({
   method: "POST",
   url: "/query",
   payload: {
-    question: "What backend does Comms Agent use for retrieval?",
+    question: "What backend does Knowledge Brain use for retrieval?",
     mode: "hybrid"
   }
 });
 assert.equal(query.statusCode, 200);
 const queryBody = query.json();
 assert.ok(queryBody.citations.length > 0);
-assert.match(queryBody.answer, /OpenSearch|retrieval|Comms Agent/i);
+assert.match(queryBody.answer, /OpenSearch|retrieval|Knowledge Brain/i);
 
 const heal = await app.inject({
   method: "POST",

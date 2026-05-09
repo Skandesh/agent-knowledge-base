@@ -19,8 +19,8 @@ import type {
   SourceInput,
   SourceRecord,
   SystemHealth
-} from "@comms-agent/shared";
-import { INGEST_STAGES, KNOWLEDGE_INDEX_VERSIONS } from "@comms-agent/shared";
+} from "@knowledge-brain/shared";
+import { INGEST_STAGES, KNOWLEDGE_INDEX_VERSIONS } from "@knowledge-brain/shared";
 import {
   chunkDocument,
   embedChunks,
@@ -42,9 +42,9 @@ import {
   synthesizeAnswer,
   synthesizeInventoryAnswer,
   verifyClaimsAgainstCitations
-} from "@comms-agent/core";
-import { KnowledgeDatabase } from "@comms-agent/storage";
-import { OpenSearchKnowledgeIndex } from "@comms-agent/search";
+} from "@knowledge-brain/core";
+import { KnowledgeDatabase } from "@knowledge-brain/storage";
+import { OpenSearchKnowledgeIndex } from "@knowledge-brain/search";
 import type { AppConfig } from "./config.js";
 import { loadDocuments, normalizeSourceInput } from "./sourceLoader.js";
 
@@ -760,10 +760,10 @@ export class KnowledgeBrain {
       failedJobs: unresolvedFailedJobs,
       message:
         productionReady
-          ? "Comms Agent is production-ready with OpenAI embeddings/generation, OpenSearch retrieval, and reranking."
+          ? "Knowledge Brain is production-ready with OpenAI embeddings/generation, OpenSearch retrieval, and reranking."
           : opensearch !== "ok" && stats.indexedChunks > 0
-            ? `Comms Agent is degraded, but local SQLite retrieval fallback is active across ${stats.indexedChunks} indexed chunk(s); restore OpenSearch and reranking for production readiness.`
-          : "Comms Agent is degraded; inspect provider, reranker, and indexing health before trusting production answers."
+            ? `Knowledge Brain is degraded, but local SQLite retrieval fallback is active across ${stats.indexedChunks} indexed chunk(s); restore OpenSearch and reranking for production readiness.`
+          : "Knowledge Brain is degraded; inspect provider, reranker, and indexing health before trusting production answers."
     };
   }
 

@@ -1,5 +1,5 @@
 {
-  "name": "@comms-agent/web",
+  "name": "@knowledge-brain/web",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -9,7 +9,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@comms-agent/shared": "workspace:*",
+    "@knowledge-brain/shared": "workspace:*",
     "lucide-react": "^0.507.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"

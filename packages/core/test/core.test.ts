@@ -10,13 +10,13 @@ import {
   synthesizeAnswer,
   titleFromHtml
 } from "../src/index.js";
-import type { RetrievedChunk, SourceRecord } from "@comms-agent/shared";
+import type { RetrievedChunk, SourceRecord } from "@knowledge-brain/shared";
 
 const source: SourceRecord = {
   id: "source_test",
   kind: "text",
   title: "Test source",
-  content: "Comms Agent notes",
+  content: "Knowledge Brain notes",
   tags: ["test"],
   status: "ready",
   createdAt: new Date().toISOString(),
@@ -28,9 +28,9 @@ describe("core knowledge primitives", () => {
     const chunks = chunkDocument({
       documentId: "doc_test",
       source,
-      title: "OpenSearch Comms Agent",
+      title: "OpenSearch Knowledge Brain",
       text:
-        "# OpenSearch Comms Agent\n\nComms Agent uses OpenSearch as the retrieval backend. The agent chunks documents, embeds text, extracts entities, and returns cited answers with confidence."
+        "# OpenSearch Knowledge Brain\n\nKnowledge Brain uses OpenSearch as the retrieval backend. The agent chunks documents, embeds text, extracts entities, and returns cited answers with confidence."
     });
 
     expect(chunks).toHaveLength(1);
@@ -44,11 +44,11 @@ describe("core knowledge primitives", () => {
       source,
       title: "Agentic OpenSearch",
       text:
-        "Comms Agent is a TypeScript agent. OpenSearch provides hybrid retrieval. The agent indexes evidence and builds a graph."
+        "Knowledge Brain is a TypeScript agent. OpenSearch provides hybrid retrieval. The agent indexes evidence and builds a graph."
     });
     const extracted = extractKnowledge(chunks);
 
-    expect(extracted.entities.some((entity) => entity.name.includes("Comms Agent"))).toBe(true);
+    expect(extracted.entities.some((entity) => entity.name.includes("Knowledge Brain"))).toBe(true);
     expect(extracted.relations.length).toBeGreaterThan(0);
     expect(extracted.claims.length).toBeGreaterThan(0);
   });

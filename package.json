@@ -1,23 +1,23 @@
 {
-  "name": "comms-agent",
+  "name": "knowledge-brain",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@10.28.2",
   "scripts": {
-    "dev": "pnpm --parallel --filter @comms-agent/api --filter @comms-agent/web dev",
-    "dev:api": "pnpm --filter @comms-agent/api dev",
-    "dev:web": "pnpm --filter @comms-agent/web dev",
+    "dev": "pnpm --parallel --filter @knowledge-brain/api --filter @knowledge-brain/web dev",
+    "dev:api": "pnpm --filter @knowledge-brain/api dev",
+    "dev:web": "pnpm --filter @knowledge-brain/web dev",
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
     "lint": "eslint . --max-warnings=0",
     "test": "vitest run",
-    "smoke": "pnpm --filter @comms-agent/api smoke",
-    "eval": "pnpm --filter @comms-agent/api eval",
+    "smoke": "pnpm --filter @knowledge-brain/api smoke",
+    "eval": "pnpm --filter @knowledge-brain/api eval",
     "demo:check": "pnpm smoke && pnpm eval",
     "demo:prepare": "pnpm seed && pnpm reindex",
-    "reindex": "pnpm --filter @comms-agent/api reindex",
-    "seed": "pnpm --filter @comms-agent/api seed"
+    "reindex": "pnpm --filter @knowledge-brain/api reindex",
+    "seed": "pnpm --filter @knowledge-brain/api seed"
   },
   "devDependencies": {
     "@eslint/js": "^9.26.0",

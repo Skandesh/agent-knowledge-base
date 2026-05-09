@@ -42,7 +42,7 @@ import type {
   SourceRecord,
   StageStatus,
   SystemHealth
-} from "@comms-agent/shared";
+} from "@knowledge-brain/shared";
 import {
   approveSourceCandidate,
   getGraph,
@@ -76,6 +76,7 @@ export function App() {
   const [busy, setBusy] = useState<BusyState | undefined>();
   const [error, setError] = useState<string | undefined>();
   const [activeView, setActiveView] = useState<ConsoleView>("ask");
+  const [selectedRunId, setSelectedRunId] = useState<string | undefined>();
   const [addSourceOpen, setAddSourceOpen] = useState(false);
   const [inspectorTab, setInspectorTab] = useState<InspectorTab>("evidence");
   const [sourceKind, setSourceKind] = useState<SourceKind>("url");
@@ -122,6 +123,11 @@ export function App() {
 
   const latestRun = runs[0];
   const latestHeal = healRuns[0];
+  const selectedRun = useMemo(() => (selectedRunId ? runs.find((run) => run.id === selectedRunId) : undefined) ?? latestRun, [
+    latestRun,
+    runs,
+    selectedRunId
+  ]);
   const completedStages = useMemo(
     () => new Set(latestRun?.stageHistory.filter((stage) => stage.status === "completed").map((stage) => stage.stage) ?? []),
     [latestRun]
@@ -133,6 +139,12 @@ export function App() {
   const indexedCount = health?.indexedChunks ?? 0;
   const readiness = useMemo(() => readinessLabel(health, indexedCount), [health, indexedCount]);
   const degraded = health ? readiness !== "Production ready" && readiness !== "Awaiting ingest" : false;
+
+  useEffect(() => {
+    if (selectedRunId && runs.length > 0 && !runs.some((run) => run.id === selectedRunId)) {
+      setSelectedRunId(undefined);
+    }
+  }, [runs, selectedRunId]);
 
   async function handleRefresh() {
     setBusy("refresh");
@@ -172,7 +184,8 @@ export function App() {
               uri: value,
               ...(tags.length > 0 ? { tags } : {})
             };
-      await ingestSource(source);
+      const run = await ingestSource(source);
+      setSelectedRunId(run.id);
       setActiveView("sources");
       setAddSourceOpen(false);
       await refresh();
@@ -262,6 +275,12 @@ export function App() {
     setAddSourceOpen(true);
   }
 
+  function selectRun(runId: string) {
+    setSelectedRunId(runId);
+    setActiveView("sources");
+    setAddSourceOpen(false);
+  }
+
   return (
     <main className="kb-app-shell">
       <header className="kb-topbar">
@@ -269,20 +288,14 @@ export function App() {
           <span className="kb-logo" aria-hidden="true">
             kb
           </span>
-          <div>
-            <p>Comms Agent</p>
-            <span>{health?.message ?? "Connecting to API"}</span>
+          <div className="kb-brand-text">
+            <strong>Knowledge Brain</strong>
           </div>
         </div>
 
-        <PipelineRail stages={stages} latestRun={latestRun} completedStages={completedStages} failedStages={failedStages} />
+        <TopbarSummary readiness={readiness} latestRun={latestRun} indexedCount={indexedCount} />
 
         <div className="kb-topbar-status">
-          <HealthDot label="OpenSearch" tone={health?.opensearch === "ok" ? "ok" : health ? "warn" : "neutral"} />
-          <HealthDot label="Embeddings" tone={providerTone(health?.embeddingProvider.status)} />
-          <HealthDot label="Generation" tone={providerTone(health?.generationProvider.status)} />
-          <HealthDot label="Reranker" tone={providerTone(health?.reranker.status)} />
-          <span className="kb-mono kb-num">{formatNumber(indexedCount)} chunks</span>
           <button className="kb-icon-button" type="button" onClick={handleRefresh} title="Refresh" disabled={busy === "refresh"}>
             <RefreshCw aria-hidden="true" className={busy === "refresh" ? "kb-spin" : undefined} />
           </button>
@@ -311,7 +324,7 @@ export function App() {
 
           <div className="kb-sidebar-section">
             <div className="kb-eyebrow">Recent runs</div>
-            <RecentRuns runs={runs} />
+            <RecentRuns runs={runs} selectedRunId={selectedRun?.id} onSelectRun={selectRun} />
           </div>
 
           <button className="kb-btn kb-sidebar-action" type="button" onClick={openAddSource}>
@@ -335,6 +348,7 @@ export function App() {
               sources={sources}
               onQuery={handleQuery}
               onOpenSources={openAddSource}
+              onRepairSourceGap={handleHeal}
               onLoosenStrict={() => setStrict(false)}
             />
           ) : null}
@@ -350,6 +364,7 @@ export function App() {
               sourceTags={sourceTags}
               setSourceTags={setSourceTags}
               latestRun={latestRun}
+              selectedRun={selectedRun}
               stages={stages}
               completedStages={completedStages}
               failedStages={failedStages}
@@ -422,6 +437,7 @@ function AskWorkspace({
   sources,
   onQuery,
   onOpenSources,
+  onRepairSourceGap,
   onLoosenStrict
 }: {
   question: string;
@@ -435,6 +451,7 @@ function AskWorkspace({
   sources: SourceRecord[];
   onQuery: (event?: FormEvent) => void;
   onOpenSources: () => void;
+  onRepairSourceGap: () => void;
   onLoosenStrict: () => void;
 }) {
   return (
@@ -477,7 +494,13 @@ function AskWorkspace({
       {busy !== "query" && queryResult?.status === "answered" ? <AnswerBlock result={queryResult} /> : null}
 
       {busy !== "query" && queryResult?.status === "insufficient_evidence" ? (
-        <LowConfidenceBlock result={queryResult} onLoosenStrict={onLoosenStrict} onOpenSources={onOpenSources} />
+        <LowConfidenceBlock
+          result={queryResult}
+          busy={busy}
+          onLoosenStrict={onLoosenStrict}
+          onOpenSources={onOpenSources}
+          onRepairSourceGap={onRepairSourceGap}
+        />
       ) : null}
 
       {busy !== "query" && !queryResult && sources.length === 0 ? <EmptySourceState onOpenSources={onOpenSources} /> : null}
@@ -546,17 +569,7 @@ function AnswerBlock({ result }: { result: QueryResponse }) {
       </section>
 
       {result.verification.failures.length > 0 ? (
-        <section className="kb-failure-list">
-          <div className="kb-section-title">
-            <span className="kb-eyebrow">Verification failures</span>
-          </div>
-          {result.verification.failures.map((failure) => (
-            <div className="kb-failure-row" key={`${failure.claimId}-${failure.reason}`}>
-              <strong>{failure.claimId}</strong>
-              <span>{failure.reason}</span>
-            </div>
-          ))}
-        </section>
+        <VerificationFailureList result={result} />
       ) : null}
 
       <div className="kb-answer-actions">
@@ -577,15 +590,51 @@ function AnswerBlock({ result }: { result: QueryResponse }) {
   );
 }
 
+function VerificationFailureList({ result }: { result: QueryResponse }) {
+  const claimById = new Map(result.claims.map((claim) => [claim.id, claim]));
+
+  return (
+    <section className="kb-failure-list">
+      <div className="kb-section-title">
+        <span className="kb-eyebrow">Verification failures</span>
+        <span>{result.verification.failures.length} total</span>
+      </div>
+      {result.verification.failures.map((failure) => {
+        const claim = claimById.get(failure.claimId);
+        return (
+          <div className="kb-failure-row" key={`${failure.claimId}-${failure.reason}`}>
+            <strong>{failure.claimId}</strong>
+            <div className="kb-failure-detail">
+              <p>{claim?.text ?? "The verifier reported a missing claim."}</p>
+              <span>{failure.reason}</span>
+              {claim?.citationChunkIds.length ? (
+                <code>cited {claim.citationChunkIds.join(", ")}</code>
+              ) : (
+                <code>no cited chunks</code>
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </section>
+  );
+}
+
 function LowConfidenceBlock({
   result,
+  busy,
   onLoosenStrict,
-  onOpenSources
+  onOpenSources,
+  onRepairSourceGap
 }: {
   result: QueryResponse;
+  busy?: BusyState;
   onLoosenStrict: () => void;
   onOpenSources: () => void;
+  onRepairSourceGap: () => void;
 }) {
+  const hasSourceGap = Boolean(result.sourceGaps?.length);
+
   return (
     <section className="kb-low-confidence">
       <div className="kb-answer-meta">
@@ -602,9 +651,14 @@ function LowConfidenceBlock({
         <strong>Why confidence is low</strong>
         {result.verification.failures.length > 0 ? (
           <ul>
-            {result.verification.failures.map((failure) => (
-              <li key={`${failure.claimId}-${failure.reason}`}>{failure.reason}</li>
-            ))}
+            {result.verification.failures.map((failure) => {
+              const claim = result.claims.find((candidate) => candidate.id === failure.claimId);
+              return (
+                <li key={`${failure.claimId}-${failure.reason}`}>
+                  {claim?.text ? `${claim.text} (${failure.reason})` : failure.reason}
+                </li>
+              );
+            })}
           </ul>
         ) : (
           <p>The returned evidence did not satisfy the current verification threshold.</p>
@@ -629,9 +683,15 @@ function LowConfidenceBlock({
         <button className="kb-btn" type="button" onClick={onLoosenStrict}>
           Re-run without strict citations
         </button>
-        <button className="kb-btn" data-variant="primary" type="button" onClick={onOpenSources}>
+        {hasSourceGap ? (
+          <button className="kb-btn" data-variant="primary" type="button" onClick={onRepairSourceGap} disabled={busy === "heal"}>
+            {busy === "heal" ? <Loader2 aria-hidden="true" className="kb-spin" /> : <Search aria-hidden="true" />}
+            {busy === "heal" ? "Finding sources" : "Find source candidates"}
+          </button>
+        ) : null}
+        <button className="kb-btn" data-variant={hasSourceGap ? "ghost" : "primary"} type="button" onClick={onOpenSources}>
           <Database aria-hidden="true" />
-          Add source
+          Add manually
         </button>
       </div>
     </section>
@@ -649,6 +709,7 @@ function SourcesWorkspace({
   sourceTags,
   setSourceTags,
   latestRun,
+  selectedRun,
   stages,
   completedStages,
   failedStages,
@@ -669,6 +730,7 @@ function SourcesWorkspace({
   sourceTags: string;
   setSourceTags: (tags: string) => void;
   latestRun?: IngestRun;
+  selectedRun?: IngestRun;
   stages: StageStatus[];
   completedStages: Set<IngestStage>;
   failedStages: Set<IngestStage>;
@@ -684,7 +746,7 @@ function SourcesWorkspace({
       <header className="kb-page-header">
         <div>
           <h1>Sources</h1>
-          <p>{sources.length} sources tracked · {latestRun ? `${latestRun.status} ingest run` : "no ingest run yet"}</p>
+          <p>{sources.length} sources tracked · {selectedRun ? `${formatStatus(selectedRun.status)} ingest run selected` : "no ingest run yet"}</p>
         </div>
         <div className="kb-page-actions">
           <button
@@ -740,6 +802,7 @@ function SourcesWorkspace({
             <EmptySourceState compact />
           )}
         </section>
+        <RunDetailsPanel run={selectedRun} stages={stages} sources={sources} />
       </div>
 
       {addSourceOpen ? (
@@ -1183,7 +1246,7 @@ function EmptySourceState({ onOpenSources, compact = false }: { onOpenSources?: 
     <section className={compact ? "kb-empty-source compact" : "kb-empty-source"}>
       <Brain aria-hidden="true" />
       <h2>Add a source to begin.</h2>
-      <p>Comms Agent answers from sources you ingest. Start with a URL, text, a file, a directory, or a repository.</p>
+      <p>Knowledge Brain answers from sources you ingest. Start with a URL, text, a file, a directory, or a repository.</p>
       {onOpenSources ? (
         <button className="kb-btn" data-variant="primary" type="button" onClick={onOpenSources}>
           <Database aria-hidden="true" />
@@ -1213,7 +1276,32 @@ function StreamingState() {
   );
 }
 
-function RecentRuns({ runs }: { runs: IngestRun[] }) {
+function TopbarSummary({ readiness, latestRun, indexedCount }: { readiness: string; latestRun?: IngestRun; indexedCount: number }) {
+  const latestLabel = latestRun ? `${formatStatus(latestRun.status)} at ${formatStatus(latestRun.stage)}` : "No ingest runs";
+  return (
+    <div className="kb-topbar-summary" aria-label="Current system summary">
+      <StatusChip tone={readinessTone(readiness)}>{readiness}</StatusChip>
+      <span className="kb-summary-item">
+        <span>Latest run</span>
+        <strong>{latestLabel}</strong>
+      </span>
+      <span className="kb-summary-item">
+        <span>Indexed</span>
+        <strong>{formatNumber(indexedCount)} chunks</strong>
+      </span>
+    </div>
+  );
+}
+
+function RecentRuns({
+  runs,
+  selectedRunId,
+  onSelectRun
+}: {
+  runs: IngestRun[];
+  selectedRunId?: string;
+  onSelectRun: (runId: string) => void;
+}) {
   if (runs.length === 0) {
     return <p className="kb-sidebar-empty">No ingest runs yet</p>;
   }
@@ -1221,15 +1309,100 @@ function RecentRuns({ runs }: { runs: IngestRun[] }) {
   return (
     <div className="kb-recent-list">
       {runs.slice(0, 5).map((run) => (
-        <div className="kb-recent-run" key={run.id}>
+        <button className="kb-recent-run" data-active={run.id === selectedRunId} key={run.id} type="button" onClick={() => onSelectRun(run.id)}>
           <span className="kb-pip" data-tone={jobTone(run.status)} />
-          <div>
+          <div className="kb-recent-run-copy">
             <strong>{formatStatus(run.status)}</strong>
             <span className="kb-mono">{run.stage}</span>
           </div>
-        </div>
+        </button>
       ))}
     </div>
+  );
+}
+
+function RunDetailsPanel({ run, stages, sources }: { run?: IngestRun; stages: StageStatus[]; sources: SourceRecord[] }) {
+  const completedStages = useMemo(
+    () => new Set(run?.stageHistory.filter((stage) => stage.status === "completed").map((stage) => stage.stage) ?? []),
+    [run]
+  );
+  const failedStages = useMemo(
+    () => new Set(run?.stageHistory.filter((stage) => stage.status === "failed").map((stage) => stage.stage) ?? []),
+    [run]
+  );
+  const source = useMemo(() => sources.find((item) => item.id === run?.sourceId), [run?.sourceId, sources]);
+
+  if (!run) {
+    return (
+      <aside className="kb-run-panel">
+        <div className="kb-section-title">
+          <span className="kb-eyebrow">Run details</span>
+          <span>Idle</span>
+        </div>
+        <p className="kb-muted-line">Select a recent run to inspect its pipeline, metrics, and stage history.</p>
+      </aside>
+    );
+  }
+
+  const sourceName = source?.title || source?.uri || run.sourceId;
+  const stageHistory = run.stageHistory.slice(-6).reverse();
+
+  return (
+    <aside className="kb-run-panel" aria-live="polite">
+      <div className="kb-run-panel-head">
+        <div>
+          <span className="kb-eyebrow">Run details</span>
+          <h2>{formatStatus(run.stage)}</h2>
+        </div>
+        <StatusChip tone={jobTone(run.status)}>{formatStatus(run.status)}</StatusChip>
+      </div>
+
+      <div className="kb-run-metrics">
+        <MetricBlock label="Documents" value={String(run.documents)} />
+        <MetricBlock label="Chunks" value={String(run.chunks)} />
+        <MetricBlock label="Entities" value={String(run.entities)} />
+      </div>
+
+      <PipelineRail stages={stages} latestRun={run} completedStages={completedStages} failedStages={failedStages} stacked />
+
+      <dl className="kb-run-meta">
+        <div>
+          <dt>Source</dt>
+          <dd title={sourceName}>{sourceName}</dd>
+        </div>
+        <div>
+          <dt>Started</dt>
+          <dd>{formatDate(run.startedAt)}</dd>
+        </div>
+        <div>
+          <dt>Completed</dt>
+          <dd>{run.completedAt ? formatDate(run.completedAt) : "-"}</dd>
+        </div>
+      </dl>
+
+      {run.error ? <p className="kb-error-text">{run.error}</p> : null}
+
+      <section className="kb-stage-history">
+        <div className="kb-section-title">
+          <span className="kb-eyebrow">Stage history</span>
+          <span>{run.stageHistory.length} events</span>
+        </div>
+        {stageHistory.length > 0 ? (
+          stageHistory.map((step) => (
+            <div className="kb-stage-history-row" key={`${step.stage}-${step.at}-${step.status}`}>
+              <span className="kb-pip" data-tone={step.status === "failed" ? "err" : "ok"} />
+              <div>
+                <strong>{formatStatus(step.stage)}</strong>
+                <p>{step.message}</p>
+              </div>
+              <span className="kb-mono">{formatDate(step.at)}</span>
+            </div>
+          ))
+        ) : (
+          <p className="kb-muted-line">No stage events have been recorded yet.</p>
+        )}
+      </section>
+    </aside>
   );
 }
 
@@ -1574,6 +1747,16 @@ function verificationTone(status: QueryResponse["verification"]["status"]): Tone
   }
   if (status === "failed") {
     return "err";
+  }
+  return "warn";
+}
+
+function readinessTone(readiness: string): Tone {
+  if (readiness === "Production ready") {
+    return "ok";
+  }
+  if (readiness === "Awaiting ingest") {
+    return "neutral";
   }
   return "warn";
 }

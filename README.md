@@ -1,4 +1,4 @@
-# Comms Agent
+# Knowledge Brain
 
 An autonomous TypeScript comms agent that ingests manuals, notes, files, URLs, and GitHub repositories, builds a structured knowledge base, retrieves cited answers through OpenSearch-backed search, and runs self-healing checks over the corpus.
 

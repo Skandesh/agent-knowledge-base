@@ -1,5 +1,5 @@
 {
-  "name": "@comms-agent/search",
+  "name": "@knowledge-brain/search",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -10,8 +10,8 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@comms-agent/core": "workspace:*",
-    "@comms-agent/shared": "workspace:*",
+    "@knowledge-brain/core": "workspace:*",
+    "@knowledge-brain/shared": "workspace:*",
     "@opensearch-project/opensearch": "^3.6.0"
   }
 }

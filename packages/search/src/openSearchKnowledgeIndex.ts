@@ -3,15 +3,15 @@ import {
   embedText,
   OPENAI_EMBEDDING_DIMENSIONS,
   reciprocalRankFusion
-} from "@comms-agent/core";
+} from "@knowledge-brain/core";
 import type {
   EntityRecord,
   KnowledgeChunk,
   QueryMode,
   RelationRecord,
   RetrievedChunk
-} from "@comms-agent/shared";
-import { KNOWLEDGE_INDICES, KNOWLEDGE_INDEX_VERSIONS } from "@comms-agent/shared";
+} from "@knowledge-brain/shared";
+import { KNOWLEDGE_INDICES, KNOWLEDGE_INDEX_VERSIONS } from "@knowledge-brain/shared";
 
 export interface OpenSearchConfig {
   node: string;

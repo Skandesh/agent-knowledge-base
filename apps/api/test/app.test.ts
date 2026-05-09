@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { buildApp } from "../src/app.js";
 
-describe("Comms Agent API", () => {
+describe("Knowledge Brain API", () => {
   it("reports degraded production providers and fails generation honestly without OpenAI credentials", async () => {
     const databasePath = resolve("./data/vitest-missing-openai.sqlite");
     await Promise.all([
@@ -71,7 +71,7 @@ describe("Comms Agent API", () => {
           kind: "text",
           title: "API Test Corpus",
           content:
-            "Comms Agent uses OpenSearch for hybrid retrieval. The TypeScript agent extracts entities and relations, then returns cited answers. The system might need low confidence healing when evidence is uncertain."
+            "Knowledge Brain uses OpenSearch for hybrid retrieval. The TypeScript agent extracts entities and relations, then returns cited answers. The system might need low confidence healing when evidence is uncertain."
         }
       }
     });
@@ -82,7 +82,7 @@ describe("Comms Agent API", () => {
       method: "POST",
       url: "/query",
       payload: {
-        question: "What does Comms Agent use for retrieval?",
+        question: "What does Knowledge Brain use for retrieval?",
         filters: {
           sourceIds: [ingest.json().sourceId]
         }

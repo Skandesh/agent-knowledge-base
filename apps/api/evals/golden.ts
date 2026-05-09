@@ -1,4 +1,4 @@
-import type { QueryMode, QueryStatus, SourceInput } from "@comms-agent/shared";
+import type { QueryMode, QueryStatus, SourceInput } from "@knowledge-brain/shared";
 
 export interface GoldenQuestion {
   id: string;
@@ -13,12 +13,12 @@ export interface GoldenQuestion {
 export const GOLDEN_CORPUS: SourceInput[] = [
   {
     kind: "text",
-    title: "Comms Agent Operating Manual",
+    title: "Knowledge Brain Operating Manual",
     tags: ["comms", "manual", "demo"],
     content: `
-# Comms Agent Operating Manual
+# Knowledge Brain Operating Manual
 
-Comms Agent is an autonomous knowledge and communications assistant. It ingests manuals, notes, files, URLs, and GitHub repositories; constructs a structured knowledge base; retrieves cited answers; and self-heals over time.
+Knowledge Brain is an autonomous knowledge and communications assistant. It ingests manuals, notes, files, URLs, and GitHub repositories; constructs a structured knowledge base; retrieves cited answers; and self-heals over time.
 
 Shared repos and demos must avoid committed secrets. Use placeholders in manuals and examples, keep API keys and service credentials in local environment files, and make pending work visible to the operator.
 `
@@ -30,7 +30,7 @@ Shared repos and demos must avoid committed secrets. Use placeholders in manuals
     content: `
 # OpenSearch Retrieval Stack
 
-OpenSearch is the primary retrieval and indexing backend for Comms Agent. It stores searchable chunks, entities, relations, and operational events. OpenSearch supports BM25 keyword search, k-NN vector search, neural search, and hybrid retrieval.
+OpenSearch is the primary retrieval and indexing backend for Knowledge Brain. It stores searchable chunks, entities, relations, and operational events. OpenSearch supports BM25 keyword search, k-NN vector search, neural search, and hybrid retrieval.
 
 The TypeScript retrieval layer runs keyword and vector searches, then fuses results with reciprocal rank fusion. Agentic retrieval uses a TypeScript planner to choose keyword, semantic, hybrid, graph, or agentic mode before answer synthesis.
 `
@@ -42,7 +42,7 @@ The TypeScript retrieval layer runs keyword and vector searches, then fuses resu
     content: `
 # Ingestion Pipeline
 
-Comms Agent ingests URL sources, local files, pasted text, and GitHub repositories. The ingest pipeline moves through queued, fetched, parsed, chunked, embedded, extracted, indexed, and verified stages.
+Knowledge Brain ingests URL sources, local files, pasted text, and GitHub repositories. The ingest pipeline moves through queued, fetched, parsed, chunked, embedded, extracted, indexed, and verified stages.
 
 Every chunk preserves provenance including source URI, document ID, chunk ID, title, tags, timestamp, content hash, and source ID. Failed ingest jobs expose actionable errors and can be retried.
 `
@@ -76,7 +76,7 @@ The system uses four OpenSearch indices. kb_chunks_v1 stores searchable text chu
     content: `
 # Agent Workflow
 
-Comms Agent follows a plan, execute, reflect workflow. The planner selects a retrieval strategy. The executor runs tools including searchChunks, lookupEntity, expandGraph, fetchSource, runEval, and startHealRun.
+Knowledge Brain follows a plan, execute, reflect workflow. The planner selects a retrieval strategy. The executor runs tools including searchChunks, lookupEntity, expandGraph, fetchSource, runEval, and startHealRun.
 
 The reflector checks whether evidence is grounded enough to answer. If evidence is weak, the agent retries with a different retrieval mode. The UI shows the agent trace so the user can inspect the plan, tool calls, evidence, and final answer.
 `
@@ -122,7 +122,7 @@ The eval suite contains golden questions that check exact lookup, conceptual ret
     title: "Unrelated Tax Policy Memo",
     tags: ["adversarial", "tax"],
     content:
-      "The BEPS project by the OECD and G20 discusses tax base protection, inclusive frameworks, and cross-border policy coordination. This memo is unrelated to Comms Agent architecture."
+      "The BEPS project by the OECD and G20 discusses tax base protection, inclusive frameworks, and cross-border policy coordination. This memo is unrelated to Knowledge Brain architecture."
   },
   {
     kind: "text",
@@ -136,7 +136,7 @@ The eval suite contains golden questions that check exact lookup, conceptual ret
     title: "Unrelated Product Notes",
     tags: ["adversarial", "product"],
     content:
-      "The product team tracks onboarding prompts, theme preferences, billing plan labels, and launch messaging. These notes should not be cited for Comms Agent technical answers."
+      "The product team tracks onboarding prompts, theme preferences, billing plan labels, and launch messaging. These notes should not be cited for Knowledge Brain technical answers."
   },
   {
     kind: "text",
@@ -150,26 +150,26 @@ The eval suite contains golden questions that check exact lookup, conceptual ret
 export const GOLDEN_QUESTIONS: GoldenQuestion[] = [
   {
     id: "manual-scope",
-    question: "What does the Comms Agent operating manual say the agent should do?",
+    question: "What does the Knowledge Brain operating manual say the agent should do?",
     mode: "hybrid",
     minConfidence: 0.25,
     expectedTerms: ["ingests manuals", "structured knowledge base", "self-heals"]
   },
   {
     id: "publish-safety",
-    question: "What should shared Comms Agent repos and demos avoid committing?",
+    question: "What should shared Knowledge Brain repos and demos avoid committing?",
     minConfidence: 0.25,
     expectedTerms: ["secrets", "placeholders", "API keys"]
   },
   {
     id: "operator-visibility",
-    question: "What should the Comms Agent manual make visible to the operator?",
+    question: "What should the Knowledge Brain manual make visible to the operator?",
     minConfidence: 0.25,
     expectedTerms: ["pending work", "operator"]
   },
   {
     id: "opensearch-role",
-    question: "What is OpenSearch used for in Comms Agent?",
+    question: "What is OpenSearch used for in Knowledge Brain?",
     mode: "semantic",
     minConfidence: 0.25,
     expectedTerms: ["primary retrieval", "indexing backend"]
@@ -195,7 +195,7 @@ export const GOLDEN_QUESTIONS: GoldenQuestion[] = [
   },
   {
     id: "source-types",
-    question: "What source types can Comms Agent ingest?",
+    question: "What source types can Knowledge Brain ingest?",
     minConfidence: 0.25,
     expectedTerms: ["URL", "local files", "pasted text", "GitHub repositories"]
   },
@@ -249,7 +249,7 @@ export const GOLDEN_QUESTIONS: GoldenQuestion[] = [
   },
   {
     id: "agent-loop",
-    question: "What workflow does Comms Agent follow?",
+    question: "What workflow does Knowledge Brain follow?",
     mode: "agentic",
     minConfidence: 0.25,
     expectedTerms: ["plan", "execute", "reflect"]
@@ -322,9 +322,9 @@ export const GOLDEN_QUESTIONS: GoldenQuestion[] = [
 ];
 
 export const EXPECTED_SOURCES_BY_QUESTION: Record<string, string[]> = {
-  "manual-scope": ["Comms Agent Operating Manual"],
-  "publish-safety": ["Comms Agent Operating Manual"],
-  "operator-visibility": ["Comms Agent Operating Manual"],
+  "manual-scope": ["Knowledge Brain Operating Manual"],
+  "publish-safety": ["Knowledge Brain Operating Manual"],
+  "operator-visibility": ["Knowledge Brain Operating Manual"],
   "opensearch-role": ["OpenSearch Retrieval Stack"],
   "retrieval-methods": ["OpenSearch Retrieval Stack"],
   fusion: ["OpenSearch Retrieval Stack"],

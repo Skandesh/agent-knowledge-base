@@ -1,5 +1,5 @@
 {
-  "name": "@comms-agent/core",
+  "name": "@knowledge-brain/core",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -10,7 +10,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@comms-agent/shared": "workspace:*",
+    "@knowledge-brain/shared": "workspace:*",
     "js-tiktoken": "^1.0.21",
     "openai": "^6.36.0",
     "p-limit": "^7.3.0",

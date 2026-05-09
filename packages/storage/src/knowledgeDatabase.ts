@@ -14,8 +14,8 @@ import type {
   RelationRecord,
   SourceRecord,
   StageStatus
-} from "@comms-agent/shared";
-import { INGEST_STAGES, STAGE_LABELS } from "@comms-agent/shared";
+} from "@knowledge-brain/shared";
+import { INGEST_STAGES, STAGE_LABELS } from "@knowledge-brain/shared";
 
 interface SqliteStatement {
   run: (...params: unknown[]) => unknown;

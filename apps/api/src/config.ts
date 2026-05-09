@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
-import { EMBEDDING_DIMENSIONS, OPENAI_EMBEDDING_DIMENSIONS } from "@comms-agent/core";
+import { EMBEDDING_DIMENSIONS, OPENAI_EMBEDDING_DIMENSIONS } from "@knowledge-brain/core";
 
 export interface AppConfig {
   apiPort: number;
@@ -36,7 +36,7 @@ export function loadConfig(overrides: Partial<AppConfig> = {}): AppConfig {
     apiPort: Number(process.env.API_PORT ?? 8787),
     databasePath: process.env.DATABASE_PATH
       ? resolve(process.env.DATABASE_PATH)
-      : resolve("./data/comms-agent.sqlite"),
+      : resolve("./data/knowledge-brain.sqlite"),
     opensearch: {
       node: process.env.OPENSEARCH_NODE ?? "http://localhost:9200",
       username: process.env.OPENSEARCH_USERNAME || undefined,

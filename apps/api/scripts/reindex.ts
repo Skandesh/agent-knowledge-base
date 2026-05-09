@@ -1,6 +1,6 @@
 import { buildApp } from "../src/app.js";
-import type { EntityRecord, KnowledgeChunk, RelationRecord } from "@comms-agent/shared";
-import { embedChunks } from "@comms-agent/core";
+import type { EntityRecord, KnowledgeChunk, RelationRecord } from "@knowledge-brain/shared";
+import { embedChunks } from "@knowledge-brain/core";
 
 const app = await buildApp();
 const brain = app as unknown as {

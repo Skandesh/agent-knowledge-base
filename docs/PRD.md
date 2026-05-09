@@ -1,4 +1,4 @@
-# Comms Agent PRD
+# Knowledge Brain PRD
 
 ## Goal
 
@@ -8,7 +8,7 @@ OpenSearch is the primary retrieval/index backend. SQLite is the canonical local
 
 ## Product Guardrail
 
-Comms Agent must remain domain-generic. User-provided URLs, source names, tags, industries, countries, or corpora are examples and seed data only. Runtime code must not hardcode domain-specific tags, source IDs, source titles, retrieval rules, parser behavior, answer templates, or healing behavior for a particular example corpus.
+Knowledge Brain must remain domain-generic. User-provided URLs, source names, tags, industries, countries, or corpora are examples and seed data only. Runtime code must not hardcode domain-specific tags, source IDs, source titles, retrieval rules, parser behavior, answer templates, or healing behavior for a particular example corpus.
 
 Example-specific content may live in tests, eval fixtures, seed scripts, or local data, but those examples must exercise generic capabilities.
 

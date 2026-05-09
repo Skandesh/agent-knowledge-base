@@ -10,7 +10,7 @@ import type {
   QueryStatus,
   RetrievedChunk,
   SourceCandidate
-} from "@comms-agent/shared";
+} from "@knowledge-brain/shared";
 import { stableId } from "./hash.js";
 import { isCorpusInventoryQuestion } from "./text.js";
 

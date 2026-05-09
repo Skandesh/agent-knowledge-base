@@ -1,4 +1,4 @@
-import type { KnowledgeChunk, SourceRecord } from "@comms-agent/shared";
+import type { KnowledgeChunk, SourceRecord } from "@knowledge-brain/shared";
 import type { Tiktoken } from "js-tiktoken/lite";
 import { getEncoding } from "js-tiktoken";
 import { sha256, stableId } from "./hash.js";

@@ -1,4 +1,4 @@
-import type { KnowledgeChunk, QueryMode, QueryPlannerOutput, RetrievedChunk } from "@comms-agent/shared";
+import type { KnowledgeChunk, QueryMode, QueryPlannerOutput, RetrievedChunk } from "@knowledge-brain/shared";
 import { embedText, cosineSimilarity } from "./embeddings.js";
 import { contentTokens } from "./text.js";
 

@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import OpenAI from "openai";
 import pLimit from "p-limit";
-import type { EmbeddingProviderName, ProviderStatus } from "@comms-agent/shared";
+import type { EmbeddingProviderName, ProviderStatus } from "@knowledge-brain/shared";
 import { tokenize } from "./text.js";
 
 export const EMBEDDING_DIMENSIONS = 96;

@@ -1,7 +1,7 @@
 import cors from "@fastify/cors";
 import Fastify from "fastify";
 import type { FastifyInstance } from "fastify";
-import type { HealScope, QueryRequest, SourceInput } from "@comms-agent/shared";
+import type { HealScope, QueryRequest, SourceInput } from "@knowledge-brain/shared";
 import type { AppConfig } from "./config.js";
 import { loadConfig } from "./config.js";
 import { KnowledgeBrain } from "./knowledgeBrain.js";

@@ -10,7 +10,7 @@ import type {
   RelationRecord,
   RetrievedChunk,
   SourceRecord
-} from "@comms-agent/shared";
+} from "@knowledge-brain/shared";
 import {
   contentTokens,
   decodeHtmlEntities,

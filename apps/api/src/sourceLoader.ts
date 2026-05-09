@@ -3,8 +3,8 @@ import { extname, join, basename } from "node:path";
 import { Readability } from "@mozilla/readability";
 import { JSDOM } from "jsdom";
 import { PDFParse } from "pdf-parse";
-import type { DocumentRecord, SourceInput, SourceRecord } from "@comms-agent/shared";
-import { sha256, stableId, stripHtml, titleFromHtml, normalizeWhitespace } from "@comms-agent/core";
+import type { DocumentRecord, SourceInput, SourceRecord } from "@knowledge-brain/shared";
+import { sha256, stableId, stripHtml, titleFromHtml, normalizeWhitespace } from "@knowledge-brain/core";
 
 const TEXT_EXTENSIONS = new Set([
   ".md",
@@ -214,7 +214,7 @@ async function loadGithubRepository(source: SourceRecord): Promise<DocumentRecor
   const treeUrl = `https://api.github.com/repos/${repo.owner}/${repo.name}/git/trees/HEAD?recursive=1`;
   const response = await fetch(treeUrl, {
     headers: {
-      "user-agent": "comms-agent-agent"
+      "user-agent": "knowledge-brain-agent"
     }
   });
   if (!response.ok) {

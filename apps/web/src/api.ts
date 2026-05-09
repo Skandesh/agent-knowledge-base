@@ -8,7 +8,7 @@ import type {
   SourceRecord,
   StageStatus,
   SystemHealth
-} from "@comms-agent/shared";
+} from "@knowledge-brain/shared";
 
 const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8787";
 
